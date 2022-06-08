@@ -35,6 +35,8 @@
 #include "SequenceCapture.h"
 #include "ImageManipulationHelpers.h"
 
+#include <chrono>
+
 using namespace Utilities;
 
 #define INFO_STREAM( stream ) \
@@ -200,6 +202,17 @@ const std::string currentDateTime()
 	return buffer;
 }
 
+// Get current date/time
+double currentEpoch()
+{
+	// get current timestamp
+	auto now = std::chrono::system_clock::now();
+	long long int epoch_us = std::chrono::duration_cast<std::chrono::microseconds>(
+			now.time_since_epoch()).count();
+	double timestamp_curr = epoch_us / 1000000.0;
+	return timestamp_curr;
+}
+
 
 bool SequenceCapture::OpenWebcam(int device, int image_width, int image_height, float fx, float fy, float cx, float cy)
 {
@@ -207,7 +220,7 @@ bool SequenceCapture::OpenWebcam(int device, int image_width, int image_height, 
 
 	no_input_specified = false;
 	frame_num = 0;
-	time_stamp = 0;
+	time_stamp = currentEpoch();
 
 	if (device < 0)
 	{
@@ -454,7 +467,14 @@ void SequenceCapture::CaptureThread()
 			}
 
 			// Recording the timestamp
-			timestamp_curr = frame_num_int * (1.0 / fps);			
+			if (is_webcam)
+			{
+				timestamp_curr = currentEpoch();
+			}
+			else
+			{
+				timestamp_curr = frame_num_int * (1.0 / fps);
+			}
 		}
 		else if (is_image_seq)
 		{
@@ -498,7 +518,7 @@ cv::Mat SequenceCapture::GetNextFrame()
 		// Webcam does not use the threaded interface
 		bool success = capture.read(latest_frame);
 
-		time_stamp = (cv::getTickCount() - start_time) / cv::getTickFrequency();
+		time_stamp = currentEpoch();
 
 		if (!success)
 		{
