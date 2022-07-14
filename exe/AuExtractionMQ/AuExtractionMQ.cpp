@@ -278,7 +278,7 @@ int main(int argc, char **argv)
 			AUs = face_analyser.Live_PostprocessOutputFile();
 			std::vector<std::pair<std::string, std::vector<double>>> aus_reg = AUs.first;
 			std::vector<std::pair<std::string, std::vector<double>>> aus_class = AUs.second;
-			std::vector<cv::Point3f> landmarks_3D = LandmarkDetector::Calculate3DEyeLandmarks(face_model, sequence_reader.fx, sequence_reader.fy, sequence_reader.cx, sequence_reader.cy)
+			std::vector<cv::Point3f> landmarks_3D = LandmarkDetector::Calculate3DEyeLandmarks(face_model, sequence_reader.fx, sequence_reader.fy, sequence_reader.cx, sequence_reader.cy);
 
 			for (size_t i = 0; i < aus_reg.size(); ++i)
 			{
